@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post your life!!</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f7f1;
+      color: #4a3c31;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+      overflow-x: hidden;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      background: #ffe5b2cc;
+      box-shadow: 2px 0 12px rgba(197,153,92,0.18);
+      padding: 2em 1em 2em;
+      overflow-y: auto;
+      z-index: 2;
+    }
+    .sidebar h2 {
+      margin-bottom: 1em;
+      color: #8e652c;
+      font-size: 1.3em;
+      text-align: center;
+    }
+    .friend-date {
+      margin-bottom: 1.3em;
+      padding-bottom: .7em;
+      border-bottom: 1px dotted #dec6a3;
+      text-align: left;
+    }
+    .friend-date span {
+      display: block;
+      font-size: .96em;
+      color: #664422;
+      margin-top: .2em;
+    }
+    .background-collage {
+      position: fixed;
+      top: 0;
+      left: 260px; /* after sidebar */
+      height: 100vh;
+      width: calc(100vw - 260px);
+      display: flex;
+      flex-direction: row;
+      z-index: -1;
+      filter: blur(4px); /* <-- ADD THIS LINE for subtle blur */
+      opacity: 0.85; /* <-- Optional: slightly lower contrast, adjust as you like */
+    }
+    .background-collage img {
+      width: auto;
+      height: 100vh;
+      min-width: 80px;
+      object-fit: cover;
+      flex: 1 1 0;
+      border-radius: 0;
+    }
+    .content-area {
+      margin-left: 260px;
+      width: calc(100vw - 260px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2em 0 2em 0;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      color: #6a4c3b;
+      margin-top: 1.3em;
+    }
+    .picker-box {
+      background: #fff7ebcc;
+      box-shadow: 0 6px 12px rgba(197, 153, 92, 0.4);
+      border-radius: 14px;
+      padding: 2em 3em 3em;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      margin-bottom: 2em;
+    }
+    label.label {
+      font-weight: 600;
+      color: #785a35;
+      margin-bottom: .6em;
+      display: block;
+    }
+    input[type="date"] {
+      padding: 0.5em;
+      font-size: 1em;
+      width: 100%;
+      border-radius: 7px;
+      border: 1px solid #d2b48c;
+      margin-top: 1em;
+      outline: none;
+    }
+    .person-container {
+      margin-top: 1.5em;
+      display: flex;
+      gap: 2em;
+      justify-content: center;
+    }
+    .person-box {
+      background: #ead9c4;
+      border-radius: 12px;
+      padding: 1em 1.5em;
+      width: 140px;
+      box-shadow: 2px 3px 8px rgba(166,124,75,0.32);
+      text-align: center;
+      margin-bottom: 1em;
+    }
+    .person-box img {
+      width: 100px;
+      border-radius: 10px;
+      border: 2px solid #c19a6b;
+    }
+    .person-name { font-weight: 700; font-size: 1.25em; margin-top: .8em; color: #664422; }
+    .person-caption { margin-top: .3em; font-style: italic; color: #7a6a55; font-size: 0.9em; min-height: 48px; }
+    .label { font-weight: 600; margin-bottom: .6em; color: #785a35; }
+    .funny-task {
+      margin-top: 2.8em;
+      font-style: italic;
+      font-weight: 600;
+      color: #a05a2e;
+      border-top: 1px dotted #cfa87b;
+      padding-top: 1em;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background collage: each photo fills vertical column after sidebar -->
+  <div class="background-collage" aria-hidden="true">
+    <img src="pictures/narasimha.jpeg" alt="Sasi photo" />
+    <img src="pictures/yuva.png" alt="LoverBoy photo" />
+    <img src="pictures/mokshith.png" alt="Mokshi photo" />
+    <img src="pictures/rohan.png" alt="Rohan photo" />
+    <img src="pictures/yuvan.png" alt="Yuvan photo" />
+    <img src="pictures/yashwanth.png" alt="Yesu photo" />
+    <img src="pictures/hari.png" alt="Harry photo" />
+    <img src="pictures/bharath.png" alt="Bharath photo" />
+    <img src="pictures/viraj.png" alt="Trader Bhai photo" />
+    <img src="pictures/harsha.png" alt="Harsha photo" />
+    <img src="pictures/tharun.png" alt="Tharun photo" />
+    <img src="pictures/danny.png" alt="Danny photo" />
+    <img src="pictures/tp.png" alt="Tp photo" />
+    <img src="pictures/arun.png" alt="Bhukya photo" />
+    <!-- ... more if needed ... -->
+  </div>
+  
+  <div class="sidebar" id="sidebar"></div>
+
+  <div class="content-area">
+    <h1>Post Your Life!!</h1>
+    <div class="picker-box" role="main" aria-live="polite" aria-atomic="true">
+      <label class="label" for="datePicker">Select Date</label>
+      <input type="date" id="datePicker" aria-label="Select date to see picked person" />
+      <div class="person-container">
+        <div class="person-box" id="selectedPersonBox" aria-label="Person selected for the chosen date">
+          <div class="label">Selected Person</div>
+          <img src="" alt="" id="selectedPersonImg" />
+          <div class="person-name" id="selectedPersonName"></div>
+          <div class="person-caption" id="selectedPersonCaption"></div>
+        </div>
+        <div class="person-box" id="upcomingPersonBox" aria-label="Upcoming person in the cycle">
+          <div class="label">Upcoming Person</div>
+          <img src="" alt="" id="upcomingPersonImg" />
+          <div class="person-name" id="upcomingPersonName"></div>
+          <div class="person-caption" id="upcomingPersonCaption"></div>
+        </div>
+      </div>
+      <div class="funny-task" id="funnyTask"></div>
+    </div>
+  </div>
+  <script>
+    const friends = [
+      {name: "Sasi", caption: "Manalni Evadra Aapedi!!", img:"pictures/narasimha.jpeg"},
+      {name: "Yuva", caption: "Our steadfast problem solver.", img:"pictures/yuva.png"},
+      {name: "Mokshi", caption: "The calm and wise advisor.", img:"pictures/mokshith.png"},
+      {name: "Rohan", caption: "The creative mind behind many ideas.", img:"pictures/rohan.png"},
+      {name: "Yuvan", caption: "Always ready with a joke or two.", img:"pictures/yuvan.png"},
+      {name: "Yesu", caption: "The cheerful spark in our group!", img:"pictures/yashwanth.png"},
+      {name: "Harry", caption: "Always up for a game!!", img:"pictures/hari.png"},
+      {name: "Bharath", caption: "The best friend a guy could ask for.", img:"pictures/bharath.png"},
+      {name: "Viraj", caption: "The trader in our group!", img:"pictures/viraj.png"},
+      {name: "Harsha", caption: "The smartest person in our group!", img:"pictures/harsha.png"},
+      {name: "Tharun", caption: "The best cook in our group!", img:"pictures/tharun.png"},
+      {name: "Danny", caption: "May the force be with you!", img:"pictures/danny.png"},
+      {name: "Tp", caption: "The cool uncle in our group!", img:"pictures/tp.png"},
+      {name: "Arun", caption: "The funniest person in our group!", img:"pictures/arun.png"},
+    ];
+    const funnyTasks = [
+      "Do a silly dance for 30 seconds!",
+      "Tell a joke to someone nearby.",
+      "Speak like a pirate for the next 10 minutes.",
+      "Try to touch your nose with your tongue.",
+      "Sing the chorus of your favorite song out loud.",
+      "Wear socks on your hands for an hour.",
+      "Make up a funny nickname for someone in the group.",
+      "Pretend to be a superhero for 5 minutes.",
+      "Draw a quick doodle of how you feel today.",
+      "Try to do 10 jumping jacks without stopping.",
+    ];
+    function seededRandom(seed) {
+      let m = 0x80000000, a = 1103515245, c = 12345, state = seed ? seed : Math.floor(Math.random() * (m - 1));
+      return function() { state = (a * state + c) % m; return state / (m - 1); }
+    }
+    function seededShuffle(arr, seed) {
+      let random = seededRandom(seed);
+      let array = arr.slice();
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+    const baseDate = new Date(Date.UTC(2025, 0, 1)); // Jan 1, 2025 for cycle base
+    function dayIndexFromDate(date) {
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const utcDate = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      const baseUtc = Date.UTC(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+      return Math.floor((utcDate - baseUtc) / msPerDay);
+    }
+    function personsByDate(date) {
+      let dayIndex = dayIndexFromDate(date);
+      if(dayIndex < 0) return {selected:null, upcoming:null, cycleOrder:[]};
+      const cycleLength = friends.length;
+      const cycleNumber = Math.floor(dayIndex / cycleLength) + 1;
+      const dayInCycle = dayIndex % cycleLength;
+      const cycleOrder = seededShuffle(friends, cycleNumber);
+      const selected = cycleOrder[dayInCycle];
+      const upcoming = cycleOrder[(dayInCycle+1)%cycleLength];
+      return {selected, upcoming, cycleOrder};
+    }
+    function getFunnyTask(dayIndex) {
+      return funnyTasks[dayIndex % funnyTasks.length];
+    }
+        function getNextDateForFriend(friendIndex) {
+  const today = new Date();
+  let dayIdx = dayIndexFromDate(today);
+  const cycleLen = friends.length;
+  const lookaheadLimit = cycleLen * 10; // lookahead 10 cycles
+  // Try to find next future date
+  for (let i = 1; i <= lookaheadLimit; i++) {
+    const checkDate = new Date(baseDate.getTime() + (dayIdx + i) * 24*60*60*1000);
+    const { selected } = personsByDate(checkDate);
+    if (selected && selected.name === friends[friendIndex].name) {
+      return {date: checkDate, str: checkDate.toLocaleDateString()};
+    }
+  }
+  // Fallback: try to find the last past date when friend was selected
+  for (let i = 0; i < lookaheadLimit; i++) {
+    const checkDate = new Date(baseDate.getTime() + (dayIdx - i) * 24*60*60*1000);
+    const { selected } = personsByDate(checkDate);
+    if (selected && selected.name === friends[friendIndex].name) {
+      return {date: checkDate, str: "(Last Scheduled) " + checkDate.toLocaleDateString()};
+    }
+  }
+  // If still not found, fallback label
+  return {date: null, str: "Not scheduled"};
+}
+
+    function updateSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      let nextDates = friends.map((f, i) => {
+        const nd = getNextDateForFriend(i);
+        return {name: f.name, nextDate: nd.date, str: nd.str};
+      });
+      // Sort by date ascending
+      nextDates = nextDates.sort((a, b) => {
+        if (!a.nextDate) return 1;
+        if (!b.nextDate) return -1;
+        return a.nextDate - b.nextDate;
+      });
+      sidebar.innerHTML = '<h2>Nearest Date</h2>';
+      nextDates.forEach(f => {
+        sidebar.innerHTML += `<div class="friend-date"><b>${f.name}</b><span>${f.str}</span></div>`;
+      });
+    }
+    function updateDisplay() {
+      const datePicker = document.getElementById("datePicker");
+      const selectedPersonImg = document.getElementById("selectedPersonImg");
+      const selectedPersonName = document.getElementById("selectedPersonName");
+      const selectedPersonCaption = document.getElementById("selectedPersonCaption");
+      const upcomingPersonImg = document.getElementById("upcomingPersonImg");
+      const upcomingPersonName = document.getElementById("upcomingPersonName");
+      const upcomingPersonCaption = document.getElementById("upcomingPersonCaption");
+      const funnyTaskDiv = document.getElementById("funnyTask");
+      const date = datePicker.valueAsDate;
+      if(!date) {
+        selectedPersonName.textContent = "Select a date";
+        selectedPersonCaption.textContent = "";
+        selectedPersonImg.src = "";
+        selectedPersonImg.alt = "";
+        upcomingPersonName.textContent = "";
+        upcomingPersonCaption.textContent = "";
+        upcomingPersonImg.src = "";
+        upcomingPersonImg.alt = "";
+        funnyTaskDiv.textContent = "";
+        return;
+      }
+      const { selected, upcoming } = personsByDate(date);
+      const dayIndex = dayIndexFromDate(date);
+      if(!selected) {
+        selectedPersonName.textContent = "No selection (date before cycle start)";
+        selectedPersonCaption.textContent = "";
+        selectedPersonImg.src = "";
+        selectedPersonImg.alt = "";
+        upcomingPersonName.textContent = "";
+        upcomingPersonCaption.textContent = "";
+        upcomingPersonImg.src = "";
+        upcomingPersonImg.alt = "";
+        funnyTaskDiv.textContent = "";
+        return;
+      }
+      selectedPersonName.textContent = selected.name;
+      selectedPersonCaption.textContent = selected.caption;
+      selectedPersonImg.src = selected.img;
+      selectedPersonImg.alt = selected.name + " photo";
+      upcomingPersonName.textContent = upcoming.name;
+      upcomingPersonCaption.textContent = upcoming.caption;
+      upcomingPersonImg.src = upcoming.img;
+      upcomingPersonImg.alt = upcoming.name + " photo";
+      funnyTaskDiv.textContent = "Today's funny task: " + getFunnyTask(dayIndex);
+    }
+    function init() {
+      const today = new Date();
+      const datePicker = document.getElementById("datePicker");
+      datePicker.valueAsDate = today;
+      updateSidebar();
+      updateDisplay();
+      datePicker.addEventListener("change", updateDisplay);
+    }
+    window.onload = init;
+  </script>
+</body>
+</html>
